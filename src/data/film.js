@@ -7,7 +7,7 @@ export const film = {
   year: null,
   contact: "waliyyajala@gmail.com",
   description:
-    "Adire: People & Process is a seven-minute documentary essay exploring the shared history of Adire textile and its place within British art history.",
+    "Adire: People & Process is a short documentary essay exploring the shared history of Adire textile and its place within British art history.",
   synopsis: [
     "Inspired by a love for fashion and its impact on human lives, the film traces Adire’s endurance and evolution into a symbol of modern identity in Nigerian and British cultures.",
     "Through narration, archival footage, and selected interviews, the film explores identity, reclamation, acceptance, and cultural evolution.",
@@ -32,6 +32,15 @@ export const film = {
       width: 937,
       height: 509,
       position: "center center",
+    },
+    portrait: {
+      src: "/assets/optimized/waliyy-portrait-1024.jpg",
+      srcSet:
+        "/assets/optimized/waliyy-portrait-640.jpg 640w, /assets/optimized/waliyy-portrait-1024.jpg 1024w",
+      alt: "Portrait of Waliyy standing against a stone wall, wearing a brown suit and adjusting his tie.",
+      width: 1024,
+      height: 1536,
+      position: "center 30%",
     },
   },
 };
@@ -87,7 +96,7 @@ export const storyThemes = [
   {
     title: "Reclaiming Identity",
     copy:
-      "Across these changes, the film returns to a central question: who gets to define the cultural life of a textile? Adire endures not as a fixed relic, but as material through which identity can be claimed again.",
+      "Across these changes, the film returns to a central question: who gets to define the cultural life of a textile? Adire is a material through which identity can be claimed again.",
     image: {
       src: "/assets/Adire-pattern-grid.jpeg",
       srcSet:

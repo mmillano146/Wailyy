@@ -5,11 +5,16 @@ import { Container } from "../components/ui/Container";
 import { PrimaryAction } from "../components/ui/PrimaryAction";
 import { SectionHeading } from "../components/ui/SectionHeading";
 
-// The full documentary is not yet approved for public distribution, so the
-// player is gated off for the preview. Once Waliyy approves distribution,
-// restore Trailer.mp4 to public/assets/ and set this flag to true — the
-// original lazy-loaded player below is preserved untouched.
+// The full documentary is not yet approved for public distribution. Once
+// Waliyy approves, restore Trailer.mp4 to public/assets/ and set
+// FILM_PUBLICLY_AVAILABLE to true. Until then, playback works only on local
+// development servers, which stream the film from the private directory via
+// the dev-only middleware in vite.config.js (/dev-media/Trailer.mp4).
+// Production builds leave DEV_MEDIA_SRC null, so no production URL references
+// the private file and the availability-pending panel stays in place.
 const FILM_PUBLICLY_AVAILABLE = false;
+const DEV_MEDIA_SRC = import.meta.env.DEV ? "/dev-media/Trailer.mp4" : null;
+const filmSrc = FILM_PUBLICLY_AVAILABLE ? film.media.video : DEV_MEDIA_SRC;
 
 const VIEWING_REQUEST_SUBJECT = encodeURIComponent(
   "Viewing request — Adire: People & Process",
@@ -31,19 +36,19 @@ export function FilmViewer() {
         <div className="viewer-heading">
           <h2 id="watch-title">Watch the full documentary</h2>
           <p>
-            {FILM_PUBLICLY_AVAILABLE
+            {filmSrc
               ? `${film.runtime} runtime. The video begins only when you choose to watch.`
               : `${film.runtime} runtime. The complete film will be available here once public screening is confirmed.`}
           </p>
         </div>
 
-        <div className={`video-frame ${FILM_PUBLICLY_AVAILABLE ? "" : "video-frame--pending"}`}>
-          {FILM_PUBLICLY_AVAILABLE ? (
+        <div className={`video-frame ${filmSrc ? "" : "video-frame--pending"}`}>
+          {filmSrc ? (
             watching ? (
               <video
                 ref={videoRef}
                 className="video-element"
-                src={film.media.video}
+                src={filmSrc}
                 poster={film.media.poster}
                 controls
                 autoPlay
@@ -54,7 +59,7 @@ export function FilmViewer() {
               >
                 Your browser does not support HTML5 video. You can
                 {" "}
-                <a href={film.media.video}>open the film directly</a>.
+                <a href={filmSrc}>open the film directly</a>.
               </video>
             ) : (
               <div className="video-poster">
@@ -109,12 +114,12 @@ export function FilmViewer() {
             </div>
           )}
         </div>
-        {FILM_PUBLICLY_AVAILABLE ? (
+        {filmSrc ? (
           <noscript>
             <p className="noscript-film">
               JavaScript is required for the lazy-loaded player. You can
               {" "}
-              <a href={film.media.video}>open the film directly</a>.
+              <a href={filmSrc}>open the film directly</a>.
             </p>
           </noscript>
         ) : (

@@ -14,8 +14,9 @@ export function Story() {
         <div className="story-intro">
           <h2 id="story-title">A story held in cloth</h2>
           <p>
-            Four ideas trace the film’s movement through history, making, and
-            cultural identity. They are editorial themes, not formal chapters.
+            Four connected themes trace the film’s movement through history,
+            making, and cultural identity — threads of one ongoing
+            exploration.
           </p>
         </div>
 
@@ -36,7 +37,6 @@ export function Story() {
                 />
               </figure>
               <div className="story-copy">
-                <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                 <h3>{theme.title}</h3>
                 <p>{theme.copy}</p>
               </div>
