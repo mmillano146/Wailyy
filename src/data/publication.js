@@ -17,7 +17,7 @@
 // `vite dev` always enables the interaction for local testing; that does not
 // change the production state above.
 // ─────────────────────────────────────────────────────────────────────────────
-export const FULL_FILM_APPROVED = false;
+export const FULL_FILM_APPROVED = true;
 
 const YOUTUBE_ID = "3v882irbXg8";
 
