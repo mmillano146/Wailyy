@@ -15,8 +15,7 @@ export function Story() {
           <h2 id="story-title">A story held in cloth</h2>
           <p>
             Four connected themes trace the film’s movement through history,
-            making, and cultural identity — threads of one ongoing
-            exploration.
+            making, and cultural identity.
           </p>
         </div>
 

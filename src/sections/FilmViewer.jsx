@@ -1,32 +1,54 @@
-import { Mail } from "lucide-react";
+import { ExternalLink, Mail } from "lucide-react";
 import { useRef, useState } from "react";
 import { film } from "../data/film";
+import { fullFilm, isDevPreviewOnly } from "../data/publication";
 import { Container } from "../components/ui/Container";
 import { PrimaryAction } from "../components/ui/PrimaryAction";
 import { SectionHeading } from "../components/ui/SectionHeading";
 
-// The full documentary is not yet approved for public distribution. Once
-// Waliyy approves, restore Trailer.mp4 to public/assets/ and set
-// FILM_PUBLICLY_AVAILABLE to true. Until then, playback works only on local
-// development servers, which stream the film from the private directory via
-// the dev-only middleware in vite.config.js (/dev-media/Trailer.mp4).
-// Production builds leave DEV_MEDIA_SRC null, so no production URL references
-// the private file and the availability-pending panel stays in place.
-const FILM_PUBLICLY_AVAILABLE = false;
-const DEV_MEDIA_SRC = import.meta.env.DEV ? "/dev-media/Trailer.mp4" : null;
-const filmSrc = FILM_PUBLICLY_AVAILABLE ? film.media.video : DEV_MEDIA_SRC;
+// The complete documentary is hosted on YouTube (unlisted). Whether it can be
+// linked or embedded is controlled by FULL_FILM_APPROVED in
+// src/data/publication.js. `fullFilm` is null unless approved (or in local
+// development), in which case the pending panel is shown and the YouTube URL
+// is not part of the production bundle.
+//
+// The short silent loop in the hero is promotional trailer footage and is
+// unrelated to this section.
 
 const VIEWING_REQUEST_SUBJECT = encodeURIComponent(
   "Viewing request — Adire: People & Process",
 );
 
-export function FilmViewer() {
-  const [watching, setWatching] = useState(false);
-  const videoRef = useRef(null);
+function Poster({ children, meta }) {
+  return (
+    <div className="video-poster">
+      <img
+        src={film.media.poster}
+        alt=""
+        width="930"
+        height="526"
+        loading="lazy"
+        decoding="async"
+      />
+      <div className="screening-meta" aria-hidden="true">
+        <span>Full documentary</span>
+        <span>{meta}</span>
+      </div>
+      <div className="poster-overlay">
+        <p>Adire: People &amp; Process</p>
+        {children}
+      </div>
+    </div>
+  );
+}
 
-  const beginFilm = () => {
-    setWatching(true);
-    window.requestAnimationFrame(() => videoRef.current?.focus());
+export function FilmViewer() {
+  const [embedded, setEmbedded] = useState(false);
+  const frameRef = useRef(null);
+
+  const loadEmbed = () => {
+    setEmbedded(true);
+    window.requestAnimationFrame(() => frameRef.current?.focus());
   };
 
   return (
@@ -36,90 +58,82 @@ export function FilmViewer() {
         <div className="viewer-heading">
           <h2 id="watch-title">Watch the full documentary</h2>
           <p>
-            {filmSrc
-              ? `${film.runtime} runtime. The video begins only when you choose to watch.`
+            {fullFilm
+              ? `${film.runtime} runtime, hosted on YouTube. The short loop at the top of this page is promotional footage; the complete film is here.`
               : `${film.runtime} runtime. The complete film will be available here once public screening is confirmed.`}
           </p>
         </div>
 
-        <div className={`video-frame ${filmSrc ? "" : "video-frame--pending"}`}>
-          {filmSrc ? (
-            watching ? (
-              <video
-                ref={videoRef}
-                className="video-element"
-                src={filmSrc}
-                poster={film.media.poster}
-                controls
-                autoPlay
-                playsInline
-                preload="none"
-                aria-label={`Play ${film.title}, the full documentary`}
-                tabIndex="-1"
-              >
-                Your browser does not support HTML5 video. You can
-                {" "}
-                <a href={filmSrc}>open the film directly</a>.
-              </video>
-            ) : (
-              <div className="video-poster">
-                <img
-                  src={film.media.poster}
-                  alt=""
-                  width="930"
-                  height="526"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="screening-meta" aria-hidden="true">
-                  <span>Full documentary</span>
-                  <span>{film.runtime}</span>
-                </div>
-                <div className="poster-overlay">
-                  <p>Adire: People &amp; Process</p>
-                  <PrimaryAction className="screening-play" onClick={beginFilm}>
-                    Watch the film
-                  </PrimaryAction>
-                </div>
-              </div>
-            )
-          ) : (
-            <div className="video-poster">
-              <img
-                src={film.media.poster}
-                alt=""
-                width="930"
-                height="526"
-                loading="lazy"
-                decoding="async"
-              />
-              <div className="screening-meta" aria-hidden="true">
-                <span>Full documentary</span>
-                <span>{film.runtime}</span>
-              </div>
-              <div className="poster-overlay">
-                <p>Adire: People &amp; Process</p>
-                <p className="screening-note">
-                  The complete film is being prepared for public screening and
-                  will be available here soon.
-                </p>
+        <div
+          className={`video-frame ${fullFilm && embedded ? "" : "video-frame--pending"}`}
+        >
+          {fullFilm && embedded ? (
+            <iframe
+              ref={frameRef}
+              className="video-element"
+              src={fullFilm.embedUrl}
+              title={`${film.title} — full documentary (${film.runtime}) on YouTube`}
+              allow="encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
+              tabIndex={-1}
+            />
+          ) : fullFilm ? (
+            <Poster meta={`${film.runtime} · YouTube`}>
+              <div className="screening-actions">
                 <a
                   className="primary-action screening-play"
-                  href={`mailto:${film.contact}?subject=${VIEWING_REQUEST_SUBJECT}`}
+                  href={fullFilm.watchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <span>Request a viewing</span>
-                  <Mail aria-hidden="true" size={17} strokeWidth={1.8} />
+                  <span>Watch on YouTube</span>
+                  <ExternalLink aria-hidden="true" size={17} strokeWidth={1.8} />
                 </a>
+                <button
+                  className="screening-secondary"
+                  type="button"
+                  onClick={loadEmbed}
+                >
+                  Play here
+                </button>
               </div>
-            </div>
+              <p className="screening-note">
+                Nothing loads from YouTube until you choose to play. The
+                embedded player uses YouTube&rsquo;s privacy-enhanced mode.
+              </p>
+            </Poster>
+          ) : (
+            <Poster meta={film.runtime}>
+              <p className="screening-note">
+                The complete film is being prepared for public screening and
+                will be available here soon.
+              </p>
+              <a
+                className="primary-action screening-play"
+                href={`mailto:${film.contact}?subject=${VIEWING_REQUEST_SUBJECT}`}
+              >
+                <span>Request a viewing</span>
+                <Mail aria-hidden="true" size={17} strokeWidth={1.8} />
+              </a>
+            </Poster>
           )}
         </div>
-        {filmSrc ? (
+
+        {isDevPreviewOnly ? (
+          <p className="dev-preview-note">
+            Developer preview: the YouTube action is enabled locally only.
+            Production stays disabled until FULL_FILM_APPROVED is set in
+            src/data/publication.js.
+          </p>
+        ) : null}
+
+        {fullFilm ? (
           <noscript>
             <p className="noscript-film">
-              JavaScript is required for the lazy-loaded player. You can
+              JavaScript is required for the player. You can
               {" "}
-              <a href={filmSrc}>open the film directly</a>.
+              <a href={fullFilm.watchUrl}>watch the film on YouTube</a>.
             </p>
           </noscript>
         ) : (

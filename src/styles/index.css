@@ -221,8 +221,24 @@ video {
   background: var(--indigo-ink);
 }
 
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+  pointer-events: none;
+}
+
+.hero-video.is-playing {
+  opacity: 1;
+}
+
 .hero-image::after {
   position: absolute;
+  z-index: 1;
   inset: 0;
   content: "";
   background:
@@ -237,9 +253,40 @@ video {
   object-fit: cover;
 }
 
+.hero-motion-toggle {
+  position: absolute;
+  z-index: 2;
+  bottom: 0.75rem;
+  left: var(--gutter);
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border: 1px solid rgb(245 241 233 / 40%);
+  border-radius: 999px;
+  color: var(--warm-ivory);
+  background: rgb(2 9 22 / 55%);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.hero-motion-toggle:hover {
+  background: rgb(2 9 22 / 75%);
+}
+
+.hero-motion-toggle:focus-visible {
+  outline: 2px solid var(--soft-blue);
+  outline-offset: 2px;
+}
+
 .hero-image-credit {
   position: absolute;
   z-index: 2;
+  text-shadow: 0 1px 8px rgb(2 9 22 / 70%);
   right: var(--gutter);
   bottom: 1rem;
   color: rgb(245 241 233 / 72%);
@@ -585,6 +632,47 @@ video {
 
 .screening-play {
   min-height: 3.45rem;
+}
+
+.screening-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.poster-overlay .screening-actions + .screening-note {
+  max-width: 24rem;
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.screening-secondary {
+  min-height: 3.45rem;
+  padding: 0 0.5rem;
+  border: 0;
+  color: var(--warm-ivory);
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+}
+
+.screening-secondary:focus-visible {
+  outline: 2px solid var(--soft-blue);
+  outline-offset: 2px;
+}
+
+.dev-preview-note {
+  margin: 1rem 0 0;
+  color: var(--warm-ivory-dim);
+  font-size: 0.72rem;
 }
 
 .noscript-film {
@@ -1226,12 +1314,21 @@ video {
     bottom: 1.1rem;
   }
 
+  .hero-motion-toggle {
+    left: 1.25rem;
+    bottom: 1.1rem;
+  }
+
   .hero-inner {
     min-height: min(100svh, 64rem);
     align-items: center;
+    /* The image frame sits beneath this container on desktop; let clicks in
+       its empty area reach the "Play motion" button. */
+    pointer-events: none;
   }
 
   .hero-copy {
+    pointer-events: auto;
     width: 48%;
     padding-block: 9rem 3rem;
   }

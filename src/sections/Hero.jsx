@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { film } from "../data/film";
 import { Container } from "../components/ui/Container";
 import { FilmImage } from "../components/ui/FilmImage";
+import { HeroVideo } from "../components/ui/HeroVideo";
 import { PrimaryAction } from "../components/ui/PrimaryAction";
 
 export function Hero() {
   const prefersReducedMotion = useReducedMotion();
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const reveal = prefersReducedMotion
     ? { initial: false }
     : {
@@ -23,7 +26,14 @@ export function Hero() {
           fetchPriority="high"
           sizes="(min-width: 800px) 56vw, 100vw"
         />
-        <span className="hero-image-credit">From the documentary</span>
+        <HeroVideo
+          src={film.media.heroVideo}
+          poster={film.media.hero.src}
+          onPlayingChange={setVideoPlaying}
+        />
+        <span className="hero-image-credit">
+          {videoPlaying ? "Promotional footage" : "From the documentary"}
+        </span>
       </div>
 
       <Container className="hero-inner">

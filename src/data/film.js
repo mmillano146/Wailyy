@@ -13,7 +13,7 @@ export const film = {
     "Through narration, archival footage, and selected interviews, the film explores identity, reclamation, acceptance, and cultural evolution.",
   ],
   media: {
-    video: "/assets/Trailer.mp4",
+    heroVideo: "/assets/adire-hero-loop.mp4",
     poster: "/assets/Adire-dyeing-process.jpeg",
     hero: {
       src: "/assets/Adire-dyeing-process.jpeg",
@@ -96,7 +96,7 @@ export const storyThemes = [
   {
     title: "Reclaiming Identity",
     copy:
-      "Across these changes, the film returns to a central question: who gets to define the cultural life of a textile? Adire is a material through which identity can be claimed again.",
+      "Across these changes, the film returns to a central question: who gets to define the cultural life of a textile? Adire as a material through which identity can be claimed again.",
     image: {
       src: "/assets/Adire-pattern-grid.jpeg",
       srcSet:
